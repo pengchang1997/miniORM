@@ -8,6 +8,13 @@ import (
 
 var TestDB *sql.DB
 
+func TestMain(m *testing.M) {
+	TestDB, _ = sql.Open("sqlite3", "test.db")
+	code := m.Run()
+	_ = TestDB.Close()
+	os.Exit(code)
+}
+
 func NewSession() *Session {
 	return New(TestDB)
 }
@@ -31,11 +38,4 @@ func TestSession_QueryRows(t *testing.T) {
 	if err := row.Scan(&count); err != nil || count != 0 {
 		t.Fatal("failed to query db", err)
 	}
-}
-
-func TestMain(m *testing.M) {
-	TestDB, _ = sql.Open("sqlite3", "../test.db")
-	code := m.Run()
-	_ = TestDB.Close()
-	os.Exit(code)
 }
