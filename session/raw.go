@@ -2,6 +2,7 @@ package session
 
 import (
 	"database/sql"
+	"miniORM/clause"
 	"miniORM/dialect"
 	"miniORM/log"
 	"miniORM/schema"
@@ -17,6 +18,8 @@ type Session struct {
 
 	// 当前Session访问的表
 	refTable *schema.Schema
+
+	clause clause.Clause
 
 	// SQL语句
 	sql strings.Builder
