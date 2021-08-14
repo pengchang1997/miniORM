@@ -2,13 +2,15 @@ package miniORM
 
 import (
 	"database/sql"
+	"miniORM/dialect"
 	"miniORM/log"
 	"miniORM/session"
 )
 
 // Engine负责数据库的连接与关闭
 type Engine struct {
-	db *sql.DB
+	db      *sql.DB
+	dialect dialect.Dialect
 }
 
 // 连接数据库
@@ -25,7 +27,17 @@ func NewEngine(driver, source string) (e *Engine, err error) {
 		return
 	}
 
-	e = &Engine{db: db}
+	tempDialect, ok := dialect.GetDialect(driver)
+	if !ok {
+		log.ErrorF("dialect %s Not Found", driver)
+		return
+	}
+
+	e = &Engine{
+		db:      db,
+		dialect: tempDialect,
+	}
+
 	log.Info("Connect database success")
 	return
 }
@@ -41,5 +53,5 @@ func (engine *Engine) Close() {
 
 // 创建一个Session
 func (engine *Engine) NewSession() *session.Session {
-	return session.New(engine.db)
+	return session.New(engine.db, engine.dialect)
 }
