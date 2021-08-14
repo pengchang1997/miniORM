@@ -2,13 +2,21 @@ package session
 
 import (
 	"database/sql"
+	"miniORM/dialect"
 	"miniORM/log"
+	"miniORM/schema"
 	"strings"
 )
 
 type Session struct {
 	// 使用sql.Open()方法连接数据库成功之后返回的指针
 	db *sql.DB
+
+	// dialect
+	dialect dialect.Dialect
+
+	// 当前Session访问的表
+	refTable *schema.Schema
 
 	// SQL语句
 	sql strings.Builder
@@ -18,8 +26,11 @@ type Session struct {
 }
 
 // 创建一个Session
-func New(db *sql.DB) *Session {
-	return &Session{db: db}
+func New(db *sql.DB, dialect dialect.Dialect) *Session {
+	return &Session{
+		db:      db,
+		dialect: dialect,
+	}
 }
 
 // 清空Session
