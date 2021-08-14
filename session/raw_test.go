@@ -2,6 +2,8 @@ package session
 
 import (
 	"database/sql"
+	"fmt"
+	_ "github.com/mattn/go-sqlite3"
 	"miniORM/dialect"
 	"os"
 	"testing"
@@ -10,10 +12,11 @@ import (
 var (
 	TestDB      *sql.DB
 	TestDial, _ = dialect.GetDialect("sqlite3")
+	err         error
 )
 
 func TestMain(m *testing.M) {
-	TestDB, _ = sql.Open("sqlite3", "../test.db")
+	TestDB, err = sql.Open("sqlite3", "../test.db")
 	code := m.Run()
 	_ = TestDB.Close()
 	os.Exit(code)
@@ -25,6 +28,7 @@ func NewSession() *Session {
 
 func TestSession_Exec(t *testing.T) {
 	s := NewSession()
+	fmt.Println(err)
 	_, _ = s.Raw("DROP TABLE IF EXISTS User;").Exec()
 	_, _ = s.Raw("CREATE TABLE User(Name text);").Exec()
 	result, _ := s.Raw("INSERT INTO User(`Name`) values (?), (?)", "Tom", "Sam").Exec()

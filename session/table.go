@@ -51,6 +51,6 @@ func (session *Session) HasTable() bool {
 	sql, values := session.dialect.TableExistSQL(session.RefTable().Name)
 	row := session.Raw(sql, values...).QueryRow()
 	var temp string
-	_ = row.Scan(temp)
+	_ = row.Scan(&temp)
 	return temp == session.RefTable().Name
 }
